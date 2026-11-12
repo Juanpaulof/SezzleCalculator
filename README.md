@@ -4,7 +4,9 @@ A full-stack calculator for Sezzle assesment: a **Spring Boot (Java 21)** REST A
 
 ```
 calculator/
-└── backend/    Spring Boot 4 + Gradle (Java 21)
+├── frontend/   React 19 + TypeScript + Vite + Vitest
+├── backend/    Spring Boot 4 + Gradle (Java 21)
+└── PROMPTS.md  AI prompts used
 ```
 
 ## Features
@@ -20,7 +22,8 @@ calculator/
 
 - JDK 21
 - Gradle 8.14+ or 9.x (IntelliJ bundles one), or generate the wrapper once: `cd backend && gradle wrapper`
-
+- Node.js 20+ and npm
+- 
 ## Run locally
 
 **Backend** (http://localhost:8080)
@@ -31,6 +34,16 @@ cd backend
 ```
 
 In IntelliJ: open the `backend` folder as a Gradle project, then run `CalculatorApplication`.
+
+**Frontend** (http://localhost:5173)
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Vite proxies `/api/*` to `localhost:8080`, so no CORS configuration is needed.
 
 ## Tests and coverage
 
@@ -87,6 +100,8 @@ curl -s -X POST http://localhost:8080/api/v1/calculate \
   -H 'Content-Type: application/json' \
   -d '{"operation":"ADD","a":0.1,"b":0.2}'
 ```
+# Frontend: tests + coverage report -> frontend/coverage/index.html
+cd frontend && npm run test:coverage
 
 ### Expected responses
 
@@ -131,3 +146,6 @@ Errors always return HTTP 400 with `{"error": CODE, "message": TEXT}`:
 
 - Percent means "number a percent of number b".
 - No authentication, persistence or rate limiting; out of scope for this exercise.
+- AI Tool had creative freedom styling the calculator. Only instruction was to look as Windows' Calculator.
+- AI Tool had creative freedom for developing testing for the frontend component (Vitest).
+- Scientific notation (`1e5`) is not accepted in the UI.

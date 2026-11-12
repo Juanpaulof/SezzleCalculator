@@ -1,0 +1,87 @@
+:root {
+  --page: #e4e8e6;
+  --body: #232a31;
+  --screen: #c9d9c3;
+  --screen-text: #1a2218;
+  --key-digit: #3a444e;
+  --key-function: #566472;
+  --key-operator: #d9822b;
+  --key-equals: #2f8f6b;
+  --key-text: #f4f6f5;
+  --error: #8f1d21;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  background: var(--page);
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; }
+
+main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1.5rem 1rem;
+}
+
+h1 { margin: 0 0 1rem; font-size: 1.1rem; font-weight: 600; color: #3a444e; }
+
+.calculator {
+  width: 100%;
+  max-width: 22rem;
+  padding: 1rem;
+  background: var(--body);
+  border-radius: 18px;
+  box-shadow: 0 10px 30px rgba(20, 28, 24, 0.25);
+}
+
+.screen {
+  margin-bottom: 1rem;
+  padding: 0.75rem 1rem;
+  color: var(--screen-text);
+  background: var(--screen);
+  border-radius: 8px;
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.expression { min-height: 1.25rem; font-size: 0.95rem; opacity: 0.7; text-align: right; overflow-x: auto; white-space: nowrap; }
+
+.display {
+  display: block;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 2.4rem;
+  line-height: 1.3;
+  text-align: right;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.error { min-height: 1.25rem; margin: 0; font-size: 0.85rem; font-weight: 600; color: var(--error); text-align: right; }
+
+.keypad { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.6rem; }
+
+.key {
+  padding: 0;
+  height: 3.6rem;
+  font: inherit;
+  font-size: 1.4rem;
+  color: var(--key-text);
+  background: var(--key-digit);
+  border: 0;
+  border-radius: 10px;
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.35);
+  cursor: pointer;
+}
+.key:active:not(:disabled) { transform: translateY(2px); box-shadow: 0 1px 0 rgba(0, 0, 0, 0.35); }
+.key:disabled { opacity: 0.6; cursor: progress; }
+.key.function { background: var(--key-function); }
+.key.operator { background: var(--key-operator); }
+.key.operator.active { color: var(--key-operator); background: var(--key-text); }
+.key.equals { background: var(--key-equals); }
+.key.wide { grid-column: span 2; }
+
+.key:focus-visible { outline: 3px solid #f0d060; outline-offset: 2px; }
+
+@media (max-width: 380px) {
+  .key { height: 3.2rem; font-size: 1.25rem; }
+  .display { font-size: 2rem; }
+}
