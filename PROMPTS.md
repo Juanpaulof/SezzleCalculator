@@ -35,4 +35,7 @@ AI tool: Claude (Anthropic).
 > "Pick whatever is standard for a React + TypeScript project today, and keep the setup as small as possible.
 > Focus on checking that valid numbers are accepted, and empty input, letters and numbers that aretoo big are rejected
 > with a clear message. Focus also on the integration with the backend, but don't call the real backend when testing.
-> Include report generation for the test coverage of these tests."> 
+> Include report generation for the test coverage of these tests."
+> 
+> > ## Docker build prompts
+> "Please generate the dockerfile based on all you know about the application this far."

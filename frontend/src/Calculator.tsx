@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { ApiError, calculate, type CalculationRequest, type OperationId } from "./api";
-import { BINARY_SYMBOLS, type BinaryOperationId, type UnaryOperationId } from "./operations";
+import { BINARY_SYMBOLS, UNARY_SYMBOLS, type BinaryOperationId, type UnaryOperationId } from "./operations";
 import { parseOperand } from "./validation";
 
 const MAX_DIGITS = 15;
@@ -20,8 +20,8 @@ export function Calculator() {
   const [display, setDisplay] = useState("0");
   const [operand, setOperand] = useState<string | null>(null);
   const [operator, setOperator] = useState<BinaryOperationId | null>(null);
-  /** True when the next digit should start a new number instead of extending the display. */
   const [fresh, setFresh] = useState(true);
+  const [percentApplied, setPercentApplied] = useState(false);
   const [expression, setExpression] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -32,6 +32,7 @@ export function Calculator() {
     setOperator(null);
     setFresh(true);
     setExpression("");
+    setPercentApplied(false);
   }
 
   function fail(message: string): null {
@@ -66,6 +67,7 @@ export function Calculator() {
     return (...args: A) => {
       if (loading) return;
       setError(null);
+      setPercentApplied(false);
       return fn(...args);
     };
   }
@@ -105,7 +107,7 @@ export function Calculator() {
 
   const chooseOperator = guarded(async (op: BinaryOperationId) => {
     let left = operand;
-    if (operator && operand !== null && !fresh) {
+    if (operator && operand !== null && (!fresh || percentApplied)) {
       // Chained operation (2 + 3 +): evaluate what we have so far.
       const result = await compute(operator, operand, display);
       if (result === null) return;
@@ -132,12 +134,24 @@ export function Calculator() {
   });
 
   const applyUnary = guarded(async (op: UnaryOperationId) => {
-    // Percent is "x percent of 1", i.e. x / 100.
-    const result = await compute(op, display, op === "PERCENTAGE" ? "1" : undefined);
+    const result = await compute(op, display);
     if (result === null) return;
-    setExpression(op === "SQRT" ? `√(${display})` : `${display}%`);
+    setExpression(`${UNARY_SYMBOLS[op]}(${display})`);
     setDisplay(result);
     setFresh(true);
+  });
+
+  const applyPercent = guarded(async () => {
+    // After "+" or "−", the typed number is a percentage OF the first number (200 + 10 % → 200 + 20).
+    // Anywhere else it is a percentage of one (50 % → 0.5), so 150 × 20 % → 150 × 0.2.
+    const base = !fresh && (operator === "ADD" || operator === "SUBTRACT") ? operand : null;
+
+    const result = await compute("PERCENTAGE", display, base ?? "1");
+    if (result === null) return;
+    setExpression(base === null ? `${display}%` : `${display}% of ${base}`);
+    setDisplay(result);
+    setFresh(true);
+    setPercentApplied(true);
   });
 
   // Keyboard support. Re-registered every render so handlers always see current state.
@@ -151,7 +165,7 @@ export function Calculator() {
       else if (e.key === "." || e.key === ",") inputDecimal();
       else if (e.key in operators) chooseOperator(operators[e.key]);
       else if (e.key === "Enter" || e.key === "=") equals();
-      else if (e.key === "%") applyUnary("PERCENTAGE");
+      else if (e.key === "%") applyPercent();
       else if (e.key === "Backspace") backspace();
       else if (e.key === "Escape") clear();
       else return;
@@ -169,7 +183,7 @@ export function Calculator() {
   const keys: KeyDef[] = [
     { label: "√", name: "square root", kind: "function", wide: true, onPress: () => applyUnary("SQRT") },
     opKey("POWER", "power"),
-    { label: "%", name: "percent", kind: "function", onPress: () => applyUnary("PERCENTAGE") },
+    { label: "%", name: "percent", kind: "function", onPress: applyPercent },
     { label: "C", name: "clear", kind: "function", onPress: clear },
     { label: "⌫", name: "backspace", kind: "function", onPress: backspace },
     { label: "±", name: "negate", kind: "function", onPress: negate },

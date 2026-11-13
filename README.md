@@ -6,6 +6,7 @@ A full-stack calculator for Sezzle assesment: a **Spring Boot (Java 21)** REST A
 calculator/
 ├── frontend/   React 19 + TypeScript + Vite + Vitest
 ├── backend/    Spring Boot 4 + Gradle (Java 21)
+├── Dockerfile  single image: backend +  frontend
 └── PROMPTS.md  AI prompts used
 ```
 
@@ -44,6 +45,15 @@ npm run dev
 ```
 
 Vite proxies `/api/*` to `localhost:8080`, so no CORS configuration is needed.
+
+## Run with Docker
+
+```bash
+docker build -t sezzle-calculator .
+docker run --rm -p 8080:8080 sezzle-calculator
+```
+
+Open http://localhost:8080. Spring Boot serves both the API and the built frontend.
 
 ## Tests and coverage
 
@@ -144,7 +154,7 @@ Errors always return HTTP 400 with `{"error": CODE, "message": TEXT}`:
 
 ## Assumptions and limitations
 
-- Percent means "number a percent of number b".
+- Percent means "number a percent of number b" and the UI uses b = 1 for a plain percent.
 - No authentication, persistence or rate limiting; out of scope for this exercise.
 - AI Tool had creative freedom styling the calculator. Only instruction was to look as Windows' Calculator.
 - AI Tool had creative freedom for developing testing for the frontend component (Vitest).

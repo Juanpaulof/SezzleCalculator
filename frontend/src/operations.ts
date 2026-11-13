@@ -10,4 +10,8 @@ export const BINARY_SYMBOLS = {
 } as const satisfies Partial<Record<OperationId, string>>;
 
 export type BinaryOperationId = keyof typeof BINARY_SYMBOLS;
-export type UnaryOperationId = "SQRT" | "PERCENTAGE";
+export const UNARY_SYMBOLS = {
+  SQRT: "√",
+} as const satisfies Partial<Record<OperationId, string>>;
+
+export type UnaryOperationId = keyof typeof UNARY_SYMBOLS;
